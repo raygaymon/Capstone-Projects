@@ -1,1 +1,1 @@
-math.pi
+duration_of_payment * 12
