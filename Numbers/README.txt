@@ -1,0 +1,1 @@
+30/4/2024 - learnt tkinter through code-along for calculator.py, made a scientific calculator with an interactive GUI - will add tkinter interface to other scripts in .py
