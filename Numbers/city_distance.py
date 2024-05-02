@@ -2,7 +2,7 @@ import requests
 from geopy import distance
 # get lat and lon from weatherapi
 
-API_KEY = "577269b266d2486cdd18779b8517aa7c"
+API_KEY = ""
 
 BASE_URL = "http://api.openweathermap.org/geo/1.0/direct?"
 
