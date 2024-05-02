@@ -9,20 +9,27 @@ def convert(num):
     
     res = ''
 
+    # check for millions
     million = int(num/1000000)
     if million > 0:
+        # run recursively to get the 100s portion of the million
         res += convert(million)
         res += " million "
 
     num = num%1000000
 
+    # check for thousands
     thousand = int(num/1000)
+
     if thousand > 0:
+
+        # run recursively to get the 100s portion of the thousands
         res += convert(thousand)
         res += " thousand "
     
     num = num % 1000
 
+    # runs the 100s portion
     hundred = int(num/100)
     if hundred > 0:
         res += digit_to_name[hundred]
@@ -30,13 +37,15 @@ def convert(num):
     
     num = num%100
 
+    # due to special names of < 20s skip the tens check
     if num < 20 :
         res += digit_to_name[num]
     else:
+        # get 10s name
         ten = int(num/10)
         if ten > 0:
             res += tens[ten] + " "
-        
+        # get single digit name
         num = num%10
         if num > 0:
             res += digit_to_name[num]
