@@ -4,6 +4,8 @@
 
 import socket
 import re
+import threading
+import queue
 
 # use re to identify ip address and socket range in user input
 ip_pattern = re.compile(r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$")
@@ -14,6 +16,7 @@ port_pattern = re.compile(r"^([0-9]+)-([0-9]+)")
 # array to store open ports
 open_ports = []
 closed_ports = []
+ports = queue.Queue()
 
 # get user input of ip address
 def get_user_ip():
@@ -38,25 +41,43 @@ def get_user_ports():
             print("Input is not valid.")
 
 # scan port method
-def scan_port(port_min, port_max, ip):
+def scan_port(ip):
 
-    # scan every port in given range
-    for i in range(port_min, port_max+1):
+    while not ports.empty():
+
+        # get the next port in line
+        port = ports.get()
+
+        # scan given port
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
                 s.settimeout(0.5)
-                s.connect((ip, i))
+                s.connect((ip, port))
                 # if connection is successful append port number to open_port list
-                open_ports.append(i)
+                open_ports.append(port)
             except:
 
                 # connection threw an error and we append to closed port list for visibility
-                closed_ports.append(i)
+                closed_ports.append(port)
+        
+        # to facilitate joining in main()
+        ports.task_done()
 
 def main():
     ip_to_scan = get_user_ip()
     port_min, port_max = get_user_ports()
-    scan_port(int(port_min), int(port_max), ip_to_scan)
+
+    # add port numbers to a queue
+    for i in range (int(port_min), int(port_max)+1):
+        ports.put(i)
+
+    # create the threads
+    for i in range(15):
+        t = threading.Thread(target=lambda: scan_port(ip_to_scan), daemon=True)
+        t.start()
+
+    # get script to pause here until threads are done running
+    ports.join()
 
     for o in open_ports:
         print(f"Port {o} is an open port.")
